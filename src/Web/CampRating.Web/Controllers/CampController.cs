@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using CampRating.Common;
+using CampRating.Services;
 using CampRating.Services.Interfaces;
 using CampRating.Web.ViewModels.Camp;
 using Microsoft.AspNetCore.Authorization;
@@ -13,11 +14,13 @@ public class CampController : BaseController
 {
     private readonly IMapper _mapper;
     private readonly ICampService _campService;
+    private readonly IReviewService _reviewService;
 
-    public CampController(IMapper mapper, ICampService campService)
+    public CampController(IMapper mapper, ICampService campService,  IReviewService reviewService)
     {
         this._mapper = mapper;
         this._campService = campService;
+        this._reviewService = reviewService;
     }
 
     [HttpGet]
@@ -60,7 +63,7 @@ public class CampController : BaseController
     }
 
     [HttpGet]
-    public IActionResult Details(string id)
+    public async Task<IActionResult> Details(string id)
     {
         var campViewModel = this._campService.GetById<CampDetailsViewModel>(id);
 
@@ -68,6 +71,9 @@ public class CampController : BaseController
         {
             return NotFound();
         }
+
+        campViewModel.AverageRating = await this._reviewService.GetAverageRatingByCampIdAsync(id);
+        campViewModel.ReviewsCount = await this._reviewService.GetReviewsCountByCampIdAsync(id);
 
         return View(campViewModel);
     }

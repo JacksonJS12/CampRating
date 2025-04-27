@@ -70,6 +70,7 @@ namespace CampRating.Web
             Assembly currentAssembly = Assembly.GetExecutingAssembly();
             services.AddAutoMapper(currentAssembly);
             services.AddAutoMapper(typeof(CampProfile));
+            services.AddAutoMapper(typeof(ReviewProfile));
             
             // Data repositories
             services.AddScoped(typeof(IDeletableEntityRepository<>), typeof(EfDeletableEntityRepository<>));
@@ -79,6 +80,7 @@ namespace CampRating.Web
             // Application services
             services.AddTransient<IEmailSender, NullMessageSender>();
             services.AddScoped<ICampService, CampService>();
+            services.AddScoped<IReviewService, ReviewService>();
         }
 
         private static void Configure(WebApplication app)

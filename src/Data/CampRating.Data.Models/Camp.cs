@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using CampRating.Data.Common.Models;
 using Microsoft.EntityFrameworkCore;
@@ -31,4 +32,6 @@ public class Camp : BaseDeletableModel<string>
 
     [Required]
     public string ImgUrl { get; set; }
+    
+    public virtual ICollection<Review> Reviews { get; set; }
 }

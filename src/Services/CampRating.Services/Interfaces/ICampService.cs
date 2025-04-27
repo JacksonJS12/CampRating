@@ -6,7 +6,7 @@ namespace CampRating.Services.Interfaces;
 
 public interface ICampService
 {
-    public T GetById<T>(string propertyId);
+    public T GetById<T>(string campId);
     public Task CreateAsync(CampFormModel model);
     public IEnumerable<T> GetAll<T>();
     public Task DeleteAsync(string campId);

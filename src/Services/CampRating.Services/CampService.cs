@@ -22,11 +22,11 @@ public class CampService : ICampService
         this._mapper = mapper;
     }
 
-    public T GetById<T>(string propertyId)
+    public T GetById<T>(string campId)
     {
         var camp = this._campRepository
             .AllAsNoTracking()
-            .FirstOrDefault(x => x.Id == propertyId && x.IsDeleted == false);
+            .FirstOrDefault(x => x.Id == campId && x.IsDeleted == false);
 
         return this._mapper.Map<T>(camp);
     }

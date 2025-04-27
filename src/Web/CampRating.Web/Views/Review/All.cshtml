@@ -1,0 +1,205 @@
+@model CampRating.Web.ViewModels.Review.CampReviewsViewModel
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Reviews for " + Model.CampName;
+}
+
+<div class="container py-5">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Camp" asp-action="All">Camps</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Camp" asp-action="Details" asp-route-id="@Model.CampId">@Model.CampName</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Reviews</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <img src="@Model.CampImage" class="card-img-top" alt="@Model.CampName" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h3 class="card-title">@Model.CampName</h3>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= Math.Floor(Model.AverageRating))
+                                {
+                                    <i class="fas fa-star text-warning"></i>
+                                }
+                                else if (i - 0.5 <= Model.AverageRating)
+                                {
+                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                }
+                                else
+                                {
+                                    <i class="far fa-star text-warning"></i>
+                                }
+                            }
+                        </div>
+                        <span class="text-muted">@Model.AverageRating.ToString("0.0") (@Model.ReviewsCount @(Model.ReviewsCount == 1 ? "review" : "reviews"))</span>
+                    </div>
+                    <a asp-controller="Camp" asp-action="Details" asp-route-id="@Model.CampId" class="btn btn-outline-primary">
+                        <i class="fas fa-info-circle me-2"></i>Camp Details
+                    </a>
+                </div>
+            </div>
+
+            @if (User.Identity.IsAuthenticated && !Model.HasUserReviewed)
+            {
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Add Your Review</h5>
+                    </div>
+                    <div class="card-body">
+                        <form asp-controller="Review" asp-action="SubmitReview" method="post">
+                            <input type="hidden" name="CampId" value="@Model.CampId" />
+
+                            <div class="mb-3">
+                                <label class="form-label">Rating</label>
+                                <div class="rating-inputs">
+                                    <div class="btn-group" role="group">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <input type="radio" class="btn-check" name="Rating" id="rating-@i" value="@i" autocomplete="off" required>
+                                            <label class="btn btn-outline-warning" for="rating-@i">@i <i class="fas fa-star"></i></label>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Comment (Optional)</label>
+                                <textarea name="Comment" class="form-control" rows="4" placeholder="Share your experience..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Review
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h4 class="mb-0">@Model.ReviewsCount @(Model.ReviewsCount == 1 ? "Review" : "Reviews")</h4>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Reviews.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="far fa-comment-alt fa-4x text-muted mb-3"></i>
+                            <h5>No Reviews Yet</h5>
+                            <p class="text-muted">Be the first to review @Model.CampName</p>
+                        </div>
+                    }
+                    else
+                    {
+                        foreach (var review in Model.Reviews)
+                        {
+                            <div class="review-item mb-4 pb-4 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <h5 class="mb-0">@review.Username</h5>
+                                        <small class="text-muted">@review.CreatedOn.ToString("MMM dd, yyyy")</small>
+                                    </div>
+                                    <div class="rating">
+                                        <span class="me-2 fw-bold">@review.Rating/5</span>
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= review.Rating)
+                                            {
+                                                <i class="fas fa-star text-warning"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="far fa-star text-warning"></i>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(review.Comment))
+                                {
+                                    <p class="mb-2">@review.Comment</p>
+                                }
+
+                                @if (User.IsInRole("Administrator"))
+                                {
+                                    <div class="d-flex justify-content-end">
+                                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteReviewModal-@review.Id">
+                                            <i class="fas fa-trash-alt me-1"></i>Delete
+                                        </button>
+
+                                        <!-- Delete Review Modal -->
+                                        <div class="modal fade" id="deleteReviewModal-@review.Id" tabindex="-1" aria-labelledby="deleteReviewModalLabel-@review.Id" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger text-white">
+                                                        <h5 class="modal-title" id="deleteReviewModalLabel-@review.Id">Confirm Delete</h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to delete this review?</p>
+                                                        <p class="text-danger mb-0"><i class="fas fa-exclamation-triangle me-2"></i>This action cannot be undone!</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <form asp-controller="Review" asp-action="DeleteReview" method="post">
+                                                            <input type="hidden" name="id" value="@review.Id" />
+                                                            <input type="hidden" name="campId" value="@Model.CampId" />
+                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Initialize the rating buttons
+            $('.btn-check').change(function() {
+                var val = $(this).val();
+                $('.btn-check').each(function() {
+                    var btnVal = $(this).val();
+                    if (btnVal <= val) {
+                        $(this).next('label').find('i').removeClass('far').addClass('fas');
+                    } else {
+                        $(this).next('label').find('i').removeClass('fas').addClass('far');
+                    }
+                });
+            });
+        });
+    </script>
+}

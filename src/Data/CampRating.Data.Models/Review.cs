@@ -29,4 +29,9 @@ public class Review : BaseDeletableModel<string>
     [Required]
     [Range(RatingMinValue, RatingMaxValue)]
     public int Rating { get; set; }
+    [Required]
+    public string CampId { get; set; }
+    
+    [Required]
+    public virtual Camp Camp { get; set; }
 }
