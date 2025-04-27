@@ -1,0 +1,121 @@
+@model CampRating.Web.ViewModels.Camp.AllCampsViewModel
+@using System.Linq
+@{
+    ViewData["Title"] = "All Camps";
+}
+
+<div class="container py-5">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="text-center fw-bold">Explore Our Camps</h1>
+            <hr class="my-4" />
+        </div>
+    </div>
+
+    @if (!Model.Camps.Any())
+    {
+        <div class="text-center py-5">
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">No Camps Found</h4>
+                <p>There are no camps available at the moment.</p>
+                @if (User.IsInRole("Administrator"))
+                {
+                    <hr>
+                    <p class="mb-0">
+                        <a asp-controller="Camp" asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-plus-circle me-2"></i>Create New Camp
+                        </a>
+                    </p>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var camp in Model.Camps)
+            {
+                <div class="col">
+                    <div class="card shadow h-100">
+                        <div class="position-relative">
+                            <img src="@camp.ImgUrl" class="card-img-top" alt="@camp.Name" style="height: 200px; object-fit: cover;">
+                            <div class="position-absolute bottom-0 start-0 bg-dark bg-opacity-75 text-white px-3 py-2 rounded-end">
+                                <i class="fas fa-map-marker-alt me-2"></i>@camp.Latitude, @camp.Longitude
+                            </div>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold">@camp.Name</h5>
+                            <p class="card-text flex-grow-1">
+                                @if (camp.Description.Length > 150)
+                                {
+                                    @(camp.Description.Substring(0, 150) + "...")
+                                }
+                                else
+                                {
+                                    @camp.Description
+                                }
+                            </p>
+                            <div class="mt-auto">
+                                <a asp-controller="Camp" asp-action="Details" asp-route-id="@camp.Id" class="btn btn-primary w-100">
+                                    <i class="fas fa-info-circle me-2"></i>View Details
+                                </a>
+                            </div>
+                        </div>
+                        @if (User.IsInRole("Administrator"))
+                        {
+                            <div class="card-footer bg-white border-top-0">
+                                <div class="d-flex justify-content-between">
+                                    <a asp-controller="Camp" asp-action="Edit" asp-route-id="@camp.Id" class="btn btn-warning flex-grow-1 me-2">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                    <button type="button" class="btn btn-danger flex-grow-1" data-bs-toggle="modal" data-bs-target="#deleteModal-@camp.Id">
+                                        <i class="fas fa-trash-alt me-1"></i>Delete
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Delete Confirmation Modal -->
+                            <div class="modal fade" id="deleteModal-@camp.Id" tabindex="-1" aria-labelledby="deleteModalLabel-@camp.Id" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title" id="deleteModalLabel-@camp.Id">Confirm Delete</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete the camp "<strong>@camp.Name</strong>"?</p>
+                                            <p class="text-danger mb-0"><i class="fas fa-exclamation-triangle me-2"></i>This action cannot be undone!</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form asp-controller="Camp" asp-action="Delete" asp-route-id="@camp.Id" method="post">
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (User.IsInRole("Administrator"))
+        {
+            <div class="text-center mt-5">
+                <a asp-controller="Camp" asp-action="Create" class="btn btn-success btn-lg">
+                    <i class="fas fa-plus-circle me-2"></i>Create New Camp
+                </a>
+            </div>
+        }
+    }
+</div>

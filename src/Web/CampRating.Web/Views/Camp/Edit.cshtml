@@ -1,0 +1,116 @@
+@model CampRating.Web.ViewModels.Camp.CampFormModel
+@{
+    ViewData["Title"] = "Edit Camp";
+    var campId = ViewData["CampId"] as string;
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Camp" asp-action="All">Camps</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Camp" asp-action="Details" asp-route-id="@campId">@Model.Name</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0 fs-4">Edit Camp: @Model.Name</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" asp-route-id="@campId" method="post">
+                        <!-- We don't need the hidden Id field since we're using the route value -->
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Camp Name</label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Latitude" class="form-label">Latitude</label>
+                                <input asp-for="Latitude" class="form-control" />
+                                <span asp-validation-for="Latitude" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label asp-for="Longitude" class="form-label">Longitude</label>
+                                <input asp-for="Longitude" class="form-control" />
+                                <span asp-validation-for="Longitude" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="ImgUrl" class="form-label">Image URL</label>
+                            <input asp-for="ImgUrl" class="form-control" />
+                            <span asp-validation-for="ImgUrl" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a asp-controller="Camp" asp-action="Details" asp-route-id="@campId" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-4 shadow-sm">
+                <div class="card-header bg-light">
+                    <h3 class="mb-0 fs-5">Preview</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img id="imgPreview" src="@Model.ImgUrl" alt="@Model.Name" class="img-fluid rounded" 
+                                 onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
+                        </div>
+                        <div class="col-md-8">
+                            <h4 id="namePreview">@Model.Name</h4>
+                            <p id="coordinatesPreview"><strong>Location:</strong> @Model.Latitude, @Model.Longitude</p>
+                            <p id="descriptionPreview">@Model.Description</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Preview functionality
+        $(document).ready(function() {
+            // Update preview when inputs change
+            $('#Name').on('input', function() {
+                $('#namePreview').text($(this).val());
+            });
+            
+            $('#Description').on('input', function() {
+                $('#descriptionPreview').text($(this).val());
+            });
+            
+            $('#Latitude, #Longitude').on('input', function() {
+                $('#coordinatesPreview').text('Location: ' + $('#Latitude').val() + ', ' + $('#Longitude').val());
+            });
+            
+            $('#ImgUrl').on('input', function() {
+                $('#imgPreview').attr('src', $(this).val());
+            });
+        });
+    </script>
+}

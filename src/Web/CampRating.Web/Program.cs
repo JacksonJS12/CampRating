@@ -1,4 +1,9 @@
-﻿namespace CampRating.Web
+﻿using CampRating.Services;
+using CampRating.Services.Interfaces;
+using CampRating.Web.Profiles;
+using Microsoft.AspNetCore.Authentication;
+
+namespace CampRating.Web
 {
     using System.Reflection;
 
@@ -45,6 +50,12 @@
                     options.CheckConsentNeeded = context => true;
                     options.MinimumSameSitePolicy = SameSiteMode.None;
                 });
+            
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/User/Login";
+                options.LogoutPath = "/User/Logout";
+            });
 
             services.AddControllersWithViews(
                 options =>
@@ -56,6 +67,10 @@
 
             services.AddSingleton(configuration);
 
+            Assembly currentAssembly = Assembly.GetExecutingAssembly();
+            services.AddAutoMapper(currentAssembly);
+            services.AddAutoMapper(typeof(CampProfile));
+            
             // Data repositories
             services.AddScoped(typeof(IDeletableEntityRepository<>), typeof(EfDeletableEntityRepository<>));
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
@@ -63,6 +78,7 @@
 
             // Application services
             services.AddTransient<IEmailSender, NullMessageSender>();
+            services.AddScoped<ICampService, CampService>();
         }
 
         private static void Configure(WebApplication app)

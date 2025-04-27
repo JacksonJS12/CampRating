@@ -4,3 +4,18 @@
 }
 
 <h1>@this.ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Camp Management</h5>
+            </div>
+            <div class="card-body">
+                <p>Create and manage camps in the system</p>
+                <a asp-area="" asp-controller="Camp" asp-action="Create" class="btn btn-primary">Create New Camp</a>
+                <a asp-area="" asp-controller="Camp" asp-action="All" class="btn btn-secondary mt-2">View All Camps</a>
+            </div>
+        </div>
+    </div>
+</div>

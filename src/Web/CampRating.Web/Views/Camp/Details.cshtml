@@ -1,0 +1,82 @@
+@model CampRating.Web.ViewModels.Camp.CampDetailsViewModel
+@{
+    ViewData["Title"] = "Camp Details - " + Model.Name;
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Camp" asp-action="All">Camps</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow border-0 mb-4">
+        <div class="row g-0">
+            <div class="col-md-6">
+                <img src="@Model.ImgUrl" class="img-fluid rounded-start" alt="@Model.Name" style="height: 100%; object-fit: cover;">
+            </div>
+            <div class="col-md-6">
+                <div class="card-body">
+                    <h1 class="card-title fw-bold mb-3">@Model.Name</h1>
+
+                    <div class="mb-4">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-map-marker-alt me-2"></i>Location
+                        </h5>
+                        <p class="ms-4">Latitude: @Model.Latitude</p>
+                        <p class="ms-4">Longitude: @Model.Longitude</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-info-circle me-2"></i>Description
+                        </h5>
+                        <p class="ms-4">@Model.Description</p>
+                    </div>
+
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <div class="d-flex mt-4">
+                            <a asp-controller="Camp" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+                                <i class="fas fa-edit me-1"></i>Edit
+                            </a>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="fas fa-trash-alt me-1"></i>Delete
+                            </button>
+                        </div>
+
+                        <!-- Delete Confirmation Modal -->
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to delete the camp "<strong>@Model.Name</strong>"?</p>
+                                        <p class="text-danger mb-0"><i class="fas fa-exclamation-triangle me-2"></i>This action cannot be undone!</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <form asp-controller="Camp" asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-controller="Camp" asp-action="All" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Camps
+        </a>
+    </div>
+</div>

@@ -1,0 +1,93 @@
+@model CampRating.Web.ViewModels.Camp.CampFormModel
+
+@{
+    ViewData["Title"] = "Create Camp";
+}
+
+<div class="container">
+    <h2>Create New Camp</h2>
+    <hr />
+    
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="form-group mb-3">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label asp-for="Description" class="control-label"></label>
+                    <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Latitude" class="control-label"></label>
+                            <input asp-for="Latitude" class="form-control" />
+                            <span asp-validation-for="Latitude" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Longitude" class="control-label"></label>
+                            <input asp-for="Longitude" class="form-control" />
+                            <span asp-validation-for="Longitude" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label asp-for="ImgUrl" class="control-label"></label>
+                    <input asp-for="ImgUrl" class="form-control" />
+                    <span asp-validation-for="ImgUrl" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Preview
+                </div>
+                <div class="card-body">
+                    <div id="previewImg" class="text-center mb-3">
+                        <img src="" alt="Camp Image Preview" class="img-fluid rounded" style="max-height: 200px; display: none;" />
+                        <p class="text-muted" id="noImage">No image URL provided</p>
+                    </div>
+                    <p class="card-text"><small class="text-muted">Enter an image URL to see a preview</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Image preview functionality
+            $("#ImgUrl").on("change", function() {
+                var imgUrl = $(this).val();
+                var imgPreview = $("img");
+                var noImageText = $("#noImage");
+                
+                if (imgUrl) {
+                    imgPreview.attr("src", imgUrl);
+                    imgPreview.show();
+                    noImageText.hide();
+                } else {
+                    imgPreview.hide();
+                    noImageText.show();
+                }
+            });
+        });
+    </script>
+}
